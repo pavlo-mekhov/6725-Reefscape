@@ -58,7 +58,7 @@ public class ShooterCommandScore extends Command {
       try {
         Thread.sleep(900);
       } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
+        //  Auto-generated catch block
         e.printStackTrace();
       }
       return true;
