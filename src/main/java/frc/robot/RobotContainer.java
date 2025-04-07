@@ -21,6 +21,8 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
 
+import java.util.jar.Attributes.Name;
+
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -34,6 +36,7 @@ import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -52,11 +55,12 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-  private final CommandXboxController m_driverController1 =
+  private final CommandXboxController m_operatorController =
       new CommandXboxController(1); 
   
 
-  private double elevatorOffset = 0;
+  private double microAdjustmentSpeed = 0.45;
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -76,50 +80,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("ShooterScore", new ShooterCommandScore(shooterSubsystem));
     NamedCommands.registerCommand("ShooterIn", new ShooterCommand(shooterSubsystem));
 
+    NamedCommands.registerCommand("LeftAlign", new AlignToReefTagRelative(false, drivebase).withTimeout(3));
 
 
-
-    // CameraServer.startAutomaticCapture(1);
-    // Thread m_visionThread =
-    //     new Thread(
-    //         () -> {
-    //           // Get the UsbCamera from CameraServer
-    //           UsbCamera camera = CameraServer.startAutomaticCapture();
-    //           // Set the resolution-
-    //           camera.setResolution(64, 48);
-    //           camera.setFPS(5);
-
-    //           // Get a CvSink. This will capture Mats from the camera
-    //           CvSink cvSink = CameraServer.getVideo();
-    //           // Setup a CvSource. This will send images back to the Dashboard
-    //           CvSource outputStream = CameraServer.putVideo("0", 100, 60);
-
-    //           // Mats are very memory expensive. Lets reuse this Mat.
-    //           Mat mat = new Mat();
-
-    //           // This cannot be 'true'. The program will never exit if it is. This
-    //           // lets the robot stop this thread when restarting robot code or
-    //           // deploying.
-    //           while (!Thread.interrupted()) {
-    //             // Tell the CvSink to grab a frame from the camera and put it
-    //             // in the source mat.  If there is an error notify the output.
-    //             if (cvSink.grabFrame(mat) == 0) {
-    //               // Send the output the error.
-    //               outputStream.notifyError(cvSink.getError());
-    //               // skip the rest of the current iteration
-    //               continue;
-    //             }
-    //             // Put a rectangle on the image
-    //             Imgproc.rectangle(
-    //                 mat, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
-    //             // Give the output stream a new image to display
-    //             outputStream.putFrame(mat);
-    //           }
-    //         });
-    // m_visionThread.setDaemon(true);
-    // m_visionThread.start();
-
-    Thread m_visionThread1 =
+    Thread m_visionThread =
         new Thread(
             () -> {
               // Get the UsbCamera from CameraServer
@@ -127,8 +91,6 @@ public class RobotContainer {
               // Set the resolution-
               camera.setResolution(64, 48);
               camera.setFPS(20);
-          
-  
 
               // Get a CvSink. This will capture Mats from the camera
               CvSink cvSink = CameraServer.getVideo();
@@ -144,7 +106,7 @@ public class RobotContainer {
               while (!Thread.interrupted()) {
                 // Tell the CvSink to grab a frame from the camera and put it
                 // in the source mat.  If there is an error notify the output.
-                if (cvSink.grabFrame(mat) == 1) {
+                if (cvSink.grabFrame(mat) == 0) {
                   // Send the output the error.
                   outputStream.notifyError(cvSink.getError());
                   // skip the rest of the current iteration
@@ -157,8 +119,44 @@ public class RobotContainer {
                 outputStream.putFrame(mat);
               }
             });
-    m_visionThread1.setDaemon(true);
-    m_visionThread1.start();
+    m_visionThread.setDaemon(true);
+    m_visionThread.start();
+
+    // Thread m_visionThread1 =
+    //     new Thread(
+    //         () -> {
+    //           // Get the UsbCamera from CameraServer
+    //           UsbCamera camera = CameraServer.startAutomaticCapture();
+    //           // Set the resolution-
+    //           camera.setResolution(64, 48);
+    //           camera.setFPS(5);
+    //           // Get a CvSink. This will capture Mats from the camera
+    //           CvSink cvSink = CameraServer.getVideo();
+    //           // Setup a CvSource. This will send images back to the Dashboard
+    //           CvSource outputStream = CameraServer.putVideo("0", 100, 60);
+    //           // Mats are very memory expensive. Lets reuse this Mat.
+    //           Mat mat = new Mat();
+    //           // This cannot be 'true'. The program will never exit if it is. This
+    //           // lets the robot stop this thread when restarting robot code or
+    //           // deploying.
+    //           while (!Thread.interrupted()) {
+    //             // Tell the CvSink to grab a frame from the camera and put it
+    //             // in the source mat.  If there is an error notify the output.
+    //             if (cvSink.grabFrame(mat) == 1) {
+    //               // Send the output the error.
+    //               outputStream.notifyError(cvSink.getError());
+    //               // skip the rest of the current iteration
+    //               continue;
+    //             }
+    //             // Put a rectangle on the image
+    //             Imgproc.rectangle(
+    //                 mat, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
+    //             // Give the output stream a new image to display
+    //             outputStream.putFrame(mat);
+    //           }
+    //         });
+    // m_visionThread1.setDaemon(true);
+    // m_visionThread1.start();
     
 
   }
@@ -180,6 +178,9 @@ public class RobotContainer {
 
   Command driveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
 
+
+
+
                                                                                             /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -190,43 +191,45 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    // new Trigger(m_exampleSubsystem::exampleCondition)
-    //     .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    
-
-    m_driverController.povDown().whileTrue(drivebase.gyroResetCommand());
-    // m_driverController.y().onTrue(new FastSpeed(m_exampleSubsystem));
-    // m_driverController.a().onTrue(new SlowSpeed(m_exampleSubsystem));
+    m_driverController.leftTrigger().whileTrue(drivebase.gyroResetCommand());
 
     //Elevator Controls 
 
-    m_driverController1.a().onTrue(new ElevatorHeight(elevatorSubsystem, 0.09 + elevatorOffset)); //L1
-    m_driverController1.b().onTrue(new ElevatorHeight(elevatorSubsystem, 0.25 + elevatorOffset)); //L2
-    m_driverController1.x().onTrue(new ElevatorHeight(elevatorSubsystem, 0.75 + elevatorOffset)); //L3
-    m_driverController1.y().onTrue(new ElevatorHeight(elevatorSubsystem, 1.50 + elevatorOffset)); //L4
+    m_operatorController.a().onTrue(new ElevatorHeight(elevatorSubsystem, 0.09)); //L1
+    m_operatorController.b().onTrue(new ElevatorHeight(elevatorSubsystem, 0.25)); //L2
+    m_operatorController.x().onTrue(new ElevatorHeight(elevatorSubsystem, 0.75)); //L3
+    m_operatorController.y().onTrue(new ElevatorHeight(elevatorSubsystem, 1.50)); //L4
 
-    m_driverController1.a().and(m_driverController1.povUp()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.10));
-    m_driverController1.b().and(m_driverController1.povUp()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.28));
-    m_driverController1.x().and(m_driverController1.povUp()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.79));
-    m_driverController1.y().and(m_driverController1.povUp()).onTrue(new ElevatorHeight(elevatorSubsystem, 1.60));
+    m_operatorController.a().and(m_operatorController.povUp()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.10));
+    m_operatorController.b().and(m_operatorController.povUp()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.28));
+    m_operatorController.x().and(m_operatorController.povUp()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.79));
+    m_operatorController.y().and(m_operatorController.povUp()).onTrue(new ElevatorHeight(elevatorSubsystem, 1.60));
 
-    m_driverController1.a().and(m_driverController1.povDown()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.08));
-    m_driverController1.b().and(m_driverController1.povDown()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.23));
-    m_driverController1.x().and(m_driverController1.povDown()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.70));
-    m_driverController1.y().and(m_driverController1.povDown()).onTrue(new ElevatorHeight(elevatorSubsystem, 1.55));
+    m_operatorController.a().and(m_operatorController.povDown()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.08));
+    m_operatorController.b().and(m_operatorController.povDown()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.23));
+    m_operatorController.x().and(m_operatorController.povDown()).onTrue(new ElevatorHeight(elevatorSubsystem, 0.70));
+    m_operatorController.y().and(m_operatorController.povDown()).onTrue(new ElevatorHeight(elevatorSubsystem, 1.55));
 
-    m_driverController1.leftBumper().onTrue(new inTake(elevatorSubsystem));
-    m_driverController1.rightTrigger().whileTrue(new ShooterCommandOut(shooterSubsystem));
-    m_driverController1.leftTrigger().onTrue(new ShooterCommand(shooterSubsystem));
-    m_driverController1.rightBumper().whileTrue(new ShooterCommandInMan(shooterSubsystem));
+    m_operatorController.y().and(m_operatorController.leftStick()).onTrue(new ElevatorHeight(elevatorSubsystem,2.00));
+
+    m_operatorController.leftBumper().onTrue(new inTake(elevatorSubsystem));
+    m_operatorController.rightTrigger().whileTrue(new ShooterCommandOut(shooterSubsystem));
+    m_operatorController.leftTrigger().onTrue(new ShooterCommand(shooterSubsystem));
+    m_operatorController.rightBumper().whileTrue(new ShooterCommandInMan(shooterSubsystem));
+
+    m_driverController.povLeft().whileTrue(drivebase.driveCameraRelative(microAdjustmentSpeed, 0));
+    m_driverController.povRight().whileTrue(drivebase.driveCameraRelative(-microAdjustmentSpeed, 0));
+    m_driverController.povUp().whileTrue(drivebase.driveCameraRelative(0, -microAdjustmentSpeed));
+    m_driverController.povDown().whileTrue(drivebase.driveCameraRelative(0, microAdjustmentSpeed));
 
 
-    // m_driverController.povRight().onTrue(new AlignToReefTagRelative(true, drivebase).withTimeout(3));
-		// m_driverController.povLeft().onTrue(new AlignToReefTagRelative(false, drivebase).withTimeout(3));
+    m_driverController.rightBumper().onTrue(new AlignToReefTagRelative(true, drivebase).withTimeout(3));
+		m_driverController.leftBumper().onTrue(new AlignToReefTagRelative(false, drivebase).withTimeout(3));
+
+    m_operatorController.povLeft().onTrue(new InstantCommand(() -> microAdjustmentSpeed += 0.1));
+    m_operatorController.povRight().onTrue(new InstantCommand(() -> microAdjustmentSpeed -= 0.1));
+
     // m_driverController1.povUp().onTrue(new ShooterCommandScore(shooterSubsystem));
   }
 
@@ -237,6 +240,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("Right");
+    return drivebase.getAutonomousCommand("Centre");
   }
 }

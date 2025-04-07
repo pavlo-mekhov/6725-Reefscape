@@ -120,6 +120,16 @@ public void drive(Translation2d translation, double rotation, boolean fieldRelat
       false); // Open loop is disabled since it shouldn't be used most of the time.
 }
 
+public void drive(ChassisSpeeds velocity)
+  {
+    swerveDrive.drive(velocity);
+  }
+
+public Command driveCameraRelative(double xSpeed, double ySpeed)
+  {
+    return run(() -> drive(new ChassisSpeeds(xSpeed, ySpeed, 0)));
+  }
+
 public Command gyroResetCommand() {
   return run (() -> {
         swerveDrive.zeroGyro();

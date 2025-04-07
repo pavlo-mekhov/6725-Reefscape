@@ -52,8 +52,8 @@ private final NetworkTable limelightTable;
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("IsVisible", isTargetVisible());
-    SmartDashboard.putNumber("TagId", getAprilTag());
+    // SmartDashboard.putBoolean("IsVisible", isTargetVisible());
+    // SmartDashboard.putNumber("TagId", getAprilTag());
   }
 
   @Override

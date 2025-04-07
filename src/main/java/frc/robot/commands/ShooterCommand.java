@@ -8,7 +8,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 import com.revrobotics.ColorSensorV3;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class ShooterCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ShooterSubsystem m_shootersubsystem;
-  private final I2C.Port i2cPort = I2C.Port.kOnboard;
+  private final I2C.Port i2cPort = I2C.Port.kMXP;
   // private final DigitalInput limitSwitch = new DigitalInput(0);
   // private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   double proximity;
