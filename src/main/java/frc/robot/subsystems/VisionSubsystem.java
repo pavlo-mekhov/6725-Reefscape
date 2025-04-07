@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -52,8 +51,8 @@ private final NetworkTable limelightTable;
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("IsVisible", isTargetVisible());
-    SmartDashboard.putNumber("TagId", getAprilTag());
+    // SmartDashboard.putBoolean("IsVisible", isTargetVisible());
+    // SmartDashboard.putNumber("TagId", getAprilTag());
   }
 
   @Override

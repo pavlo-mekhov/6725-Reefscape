@@ -16,7 +16,7 @@ public class ShooterCommandScore extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ShooterSubsystem m_shootersubsystem;
 
-    private final I2C.Port i2cPort = I2C.Port.kOnboard;
+    private final I2C.Port i2cPort = I2C.Port.kMXP;
       private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
       double proximity = m_colorSensor.getProximity();
 
@@ -43,7 +43,6 @@ public class ShooterCommandScore extends Command {
   @Override
   public void execute() {
     proximity = m_colorSensor.getProximity();
-    System.out.println("CODEEEEEEEEEEEEEEEEEEEEEE");
   }
 
   // Called once the command ends or is interrupted.
@@ -59,7 +58,7 @@ public class ShooterCommandScore extends Command {
       try {
         Thread.sleep(900);
       } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
+        //  Auto-generated catch block
         e.printStackTrace();
       }
       return true;

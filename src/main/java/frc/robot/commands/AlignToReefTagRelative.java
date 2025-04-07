@@ -7,7 +7,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
@@ -39,12 +38,10 @@ public class AlignToReefTagRelative extends Command {
     rotController.setSetpoint(Constants.ROT_SETPOINT_REEF_ALIGNMENT);
     rotController.setTolerance(Constants.ROT_TOLERANCE_REEF_ALIGNMENT);
 
-    xController.setSetpoint(-0.05);
-    // xController.setSetpoint(Constants.X_SETPOINT_REEF_ALIGNMENT);
+    xController.setSetpoint(-0.5);
     xController.setTolerance(Constants.X_TOLERANCE_REEF_ALIGNMENT);
 
-    yController.setSetpoint(isRightScore ? 0.3 : 0.02);
-    // yController.setSetpoint(isRightScore ? Constants.Y_SETPOINT_REEF_ALIGNMENT : -Constants.Y_SETPOINT_REEF_ALIGNMENT);
+    yController.setSetpoint(isRightScore ? 0.3 : 0.01);
     yController.setTolerance(Constants.Y_TOLERANCE_REEF_ALIGNMENT);
 
     tagID = LimelightHelpers.getFiducialID("");
@@ -56,14 +53,14 @@ public class AlignToReefTagRelative extends Command {
       this.dontSeeTagTimer.reset();
 
       double[] postions = LimelightHelpers.getBotPose_TargetSpace("");
-      SmartDashboard.putNumber("x", postions[2]);
+      // SmartDashboard.putNumber("x", postions[2]);
 
       double xSpeed = xController.calculate(postions[2]);
-      SmartDashboard.putNumber("xspeed", xSpeed);
+      // SmartDashboard.putNumber("xspeed", xSpeed);
       double ySpeed = -yController.calculate(postions[0]);
       double rotValue = -rotController.calculate(postions[4]);
 
-      drivebase.drive(new Translation2d(ySpeed, xSpeed), rotValue, false);
+      drivebase.drive(new Translation2d(ySpeed, -xSpeed), rotValue, false);
 
       if (!rotController.atSetpoint() ||
           !yController.atSetpoint() ||
@@ -74,7 +71,7 @@ public class AlignToReefTagRelative extends Command {
       drivebase.drive(new Translation2d(), 0, false);
     }
 
-    SmartDashboard.putNumber("poseValidTimer", stopTimer.get());
+    // SmartDashboard.putNumber("poseValidTimer", stopTimer.get());
   }
 
   @Override

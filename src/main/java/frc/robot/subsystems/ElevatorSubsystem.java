@@ -8,7 +8,6 @@ package frc.robot.subsystems;
 import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
@@ -21,7 +20,6 @@ import com.revrobotics.RelativeEncoder;;
 public class ElevatorSubsystem extends SubsystemBase {
   private final SparkMax elevatorMotorLeft;
   private final SparkMax elevatorMotorRight;
-  private final RelativeEncoder m_elevatorEncoderLeft;
   private final RelativeEncoder m_elevatorEncoderRight;
   // Creates a PIDController with gains kP, kI, and kD
   private SparkClosedLoopController m_elevatorControllerRight;
@@ -34,8 +32,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     
     elevatorMotorLeft.configure(Configs.ElevatorConfigs.elevatorFollowerConfig,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
     elevatorMotorRight.configure(Configs.ElevatorConfigs.elevatorConfig,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
-    
-    m_elevatorEncoderLeft = elevatorMotorLeft.getEncoder();
+  
     m_elevatorEncoderRight = elevatorMotorRight.getEncoder();
 
     // m_elevatorControllerLeft = elevatorMotorLeft.getClosedLoopController();
@@ -59,15 +56,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     // printMotorPosition();
   }
 
-  public void printMotorPosition(){
-    double relativeEncoderMetersLeft = (m_elevatorEncoderLeft.getPosition() * (ElevatorConstants.discGearRatio / ElevatorConstants.discCircumferenceMeter)) * 180;
-    double relativeEncoderMetersRight = (m_elevatorEncoderRight.getPosition() * (ElevatorConstants.discGearRatio / ElevatorConstants.discCircumferenceMeter)) * 180;
-    SmartDashboard.putNumber("Left Motor", (relativeEncoderMetersLeft ));
-    SmartDashboard.putNumber("Right Motor", (relativeEncoderMetersRight));
-  }
-
   public void setElevatorSpeed(double speed){
-    // elevatorMotorLeft.set(speed);
     elevatorMotorRight.set(-speed*4);
   }
   
@@ -90,11 +79,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    
-    // SmartDashboard.putNumber("Elevator Height", getElevatorHeight());
-    // SmartDashboard.putNumber("Elevator Encoder", m_elevatorEncoderLeft.getPosition());
-    // SmartDashboard.putNumber("Elevator Output", elevatorMotorRight.getAppliedOutput());
+  
   }
 
   @Override
@@ -103,6 +88,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void resetEncoders() {
-    // m_absoluteEncoder.setPosition(0);
+
   }
 }
